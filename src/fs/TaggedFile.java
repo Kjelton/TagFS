@@ -11,17 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaggedFile {
-	
+
 	public String tagAttrib = "Tag";
-	public ArrayList<String> originList = new ArrayList<String>(); 
+	public ArrayList<String> originList = new ArrayList<String>();
 	public UserDefinedFileAttributeView userView;
 	public Path file;
-	
-	public TaggedFile(Path file){
+
+	public TaggedFile(Path file) {
 		userView = Files.getFileAttributeView(file, UserDefinedFileAttributeView.class);
 		this.file = file;
-		
-		if(!hasAttribute(tagAttrib)){
+
+		if (!hasAttribute(tagAttrib)) {
 			try {
 				userView.write(tagAttrib, Charset.defaultCharset().encode(""));
 			} catch (IOException e) {
@@ -30,12 +30,12 @@ public class TaggedFile {
 			}
 		}
 	}
-	
-	public boolean hasAttribute(String attribute){
+
+	public boolean hasAttribute(String attribute) {
 		try {
 			List<String> attribList = userView.list();
-			for(String att : attribList){
-				if (att.equals(attribute)){
+			for (String att : attribList) {
+				if (att.equals(attribute)) {
 					return true;
 				}
 			}
@@ -45,21 +45,21 @@ public class TaggedFile {
 		}
 		return false;
 	}
-	
-	public boolean hasTag(String tagValue){
+
+	public boolean hasTag(String tagValue) {
 		String[] tagList = readTagList();
-	
-		for(String tag : tagList){
-			if (tag.equals(tagValue)){
+
+		for (String tag : tagList) {
+			if (tag.equals(tagValue)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	public void addTag(String tagValue){
-		
-		if (!hasTag(tagValue)){
+
+	public void addTag(String tagValue) {
+
+		if (!hasTag(tagValue)) {
 			String value = readTags() + tagValue + ";";
 			try {
 				userView.write(tagAttrib, Charset.defaultCharset().encode(value));
@@ -69,27 +69,27 @@ public class TaggedFile {
 			}
 		}
 	}
-	
-	public String [] readTagList(){
+
+	public String[] readTagList() {
 		ByteBuffer bb;
 		try {
 			bb = ByteBuffer.allocate(userView.size(tagAttrib));
 			userView.read(tagAttrib, bb);
 			bb.flip();
 			String value = Charset.defaultCharset().decode(bb).toString();
-			
+
 			String[] tagList = value.split(";");
-			
+
 			return tagList;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
-	public String readTags(){
+
+	public String readTags() {
 		ByteBuffer bb;
 		try {
 			bb = ByteBuffer.allocate(userView.size(tagAttrib));
@@ -103,17 +103,16 @@ public class TaggedFile {
 		}
 		return null;
 	}
-	
-	public void clearTags(){
-		
+
+	public void clearTags() {
+
 	}
-	
-	public static void main(String args[]){
+
+	/*public static void main(String args[]) {
 		Path file = Paths.get("E:/Pictures/Toga Himiko/this.jpg");
 		TaggedFile newFile = new TaggedFile(file);
 		System.out.println(newFile.readTags());
 		newFile.addTag("blonde");
 		System.out.println(newFile.readTags());
-	}
+	}*/
 }
-
