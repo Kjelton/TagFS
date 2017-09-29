@@ -60,7 +60,7 @@ public class TaggedFile {
 	public void addTag(String tagValue) {
 
 		if (!hasTag(tagValue)) {
-			String value = readTags() + tagValue + ";";
+			String value = getTags() + tagValue + ";";
 			try {
 				userView.write(tagAttrib, Charset.defaultCharset().encode(value));
 			} catch (IOException e) {
@@ -89,13 +89,16 @@ public class TaggedFile {
 		return null;
 	}
 
-	public String readTags() {
+	public String getTags() {
 		ByteBuffer bb;
 		try {
 			bb = ByteBuffer.allocate(userView.size(tagAttrib));
 			userView.read(tagAttrib, bb);
 			bb.flip();
 			String value = Charset.defaultCharset().decode(bb).toString();
+			if(value.equals("")){
+				return "NONE";
+			}
 			return value;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
