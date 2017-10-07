@@ -13,7 +13,6 @@ import java.util.List;
 public class TaggedFile {
 
 	public String tagAttrib = "Tag";
-	public ArrayList<String> originList = new ArrayList<String>();
 	public UserDefinedFileAttributeView userView;
 	public Path file;
 
