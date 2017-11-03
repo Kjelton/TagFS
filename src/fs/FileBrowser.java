@@ -45,79 +45,72 @@ public class FileBrowser {
 
 		System.out.println(Integer.toString(currentDirectoryFiles.length) + " files found.");
 	}
-	
-
-	/*public void getTags() {
-		File[] listOfFiles = currentDirectory.toFile().listFiles();
-		TaggedFile[] taggedFiles = new TaggedFile[listOfFiles.length];
-		for (int i = 0; i < listOfFiles.length; i++) {
-			taggedFiles[i] = new TaggedFile(listOfFiles[i].toPath());
-		}
-	}
-
-	public void getTags(File[] listOfFiles) {
-		TaggedFile[] taggedFiles = new TaggedFile[listOfFiles.length];
-		for (int i = 0; i < listOfFiles.length; i++) {
-			taggedFiles[i] = new TaggedFile(listOfFiles[i].toPath());
-		}
-	}*/
 
 	public void printWelcome(){
 		System.out.println("Welcome to TagFS");
 		System.out.println("Current working directory: " + currentDirectory.toString());
 	}
 	
-	public String addTag(String filename, String tag){
-		
-		for(TaggedFile file : currentDirectoryFiles){
-			if(file.getName().equals(filename)){
-				file.addTag(tag);
-				return "tag: " +tag+ " added successfully to file: " + filename;
-			}
-		}
-		
-		/*Path fullPath = Paths.get(currentDirectory.toString()+filename);
-		TaggedFile file;
-		if(Files.exists(Paths.get(filename))){
-			file = new TaggedFile(Paths.get(filename));
-			file.addTag(tag);
-			return "tag: " +tag+ " added successfully to file: " + filename;
-		}
-		else if(Files.exists(fullPath)){
-			file = new TaggedFile(fullPath);
-			file.addTag(tag);
-			return "tag: " +tag+ " added successfully to file: " + filename;
-		}*/
-		return "File does not exist";
-	}
-	
 	public void run() {
 		printWelcome();
-		String option = "";
+		String input = "";
+		String [] option;
 		Scanner reader = new Scanner(System.in);
-		String command = "";
 		while (this.isRunning()) {
 			//getTags();
-			option = reader.nextLine();
-			command = option.substring(0, 2);
-			switch (command) {
+			input = reader.nextLine();
+			option = input.split(" ");
+			
+			switch (option[0]) {
 			case "cd":
-				System.out.println(option);
-				if (Paths.get(currentDirectory.toString() + "\\" + option.substring(3)).toFile().exists()) {
-					changeDirectory(Paths.get(currentDirectory.toString() + "\\" + option.substring(3)));
-				} else {
-					changeDirectory(Paths.get(option.substring(3)));
+				if (option.length >= 2){
+					if (Paths.get(currentDirectory.toString() + "\\" + option[1]).toFile().exists()) {
+						changeDirectory(Paths.get(currentDirectory.toString() + "\\" + option[1]));
+					} else {
+						changeDirectory(Paths.get(option[1]));
+					}
 				}
 				break;
 			case "up":
 				changeDirectory(Paths.get(currentDirectory.getParent()));
+				break;
 			case "ls":
 				loadDirectory();
+				break;
 			case "at":
-				
+				if (option.length >= 3){
+					for (TaggedFile file : currentDirectoryFiles){
+						if(file.getName().equals(option[1])){
+							file.addTag(option[2]);
+						}
+					}
+				}
+				System.out.println("Successfully added tag: "+option[2]+ " to file: "+option[1]);
+				break;
+			case "rt":
+				if (option.length >= 3){
+					for (TaggedFile file : currentDirectoryFiles){
+						if(file.getName().equals(option[1])){
+							file.removeTag(option[2]);
+						}
+					}
+				}
+				System.out.println("Successfully remove tag: "+option[2]+ " to file: "+option[1]);
+				break;
+			case "cl":
+				if (option.length >= 2){
+					for (TaggedFile file : currentDirectoryFiles){
+						if(file.getName().equals(option[1])){
+							file.clearTags();
+						}
+					}
+				}
+				System.out.println("Successfully removed all tags from file: "+option[1]);
+				break;
 			case "ex":
 				System.out.println("Goodbye!");
 				running = false;
+				break;
 			default:
 
 			}
