@@ -11,7 +11,7 @@ public class FileBrowser {
 	
 	
 	
-	private TaggedFile defaultDirectory = new TaggedFile("E:/Pictures/Toga Himiko");
+	private TaggedFile defaultDirectory = new TaggedFile("C:/Users/Elton/Pictures/test");
 	private TaggedFile currentDirectory = defaultDirectory;
 	private TaggedFile [] currentDirectoryFiles = currentDirectory.listTaggedFiles();
 	private boolean running;
@@ -25,6 +25,7 @@ public class FileBrowser {
 		if (Files.exists(newDirectory)) {
 			if (Files.isDirectory(newDirectory)) {
 				currentDirectory = new TaggedFile(newDirectory.toString());
+				currentDirectoryFiles = currentDirectory.listTaggedFiles();
 				System.out.println("Changed directory to: " + newDirectory.toString());
 			} else if (Files.isRegularFile(newDirectory)) {
 				System.out.println("Path specified is a file.");
@@ -114,11 +115,14 @@ public class FileBrowser {
 				loadDirectory();
 			case "at":
 				
+			case "ex":
+				System.out.println("Goodbye!");
+				running = false;
 			default:
 
 			}
-			reader.close();
 		}
+		reader.close();
 	}
 
 	public boolean isRunning() {
