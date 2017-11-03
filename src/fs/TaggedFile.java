@@ -1,5 +1,6 @@
 package fs;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -10,15 +11,14 @@ import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaggedFile {
+public class TaggedFile extends File {
 
 	public String tagAttrib = "Tag";
 	public UserDefinedFileAttributeView userView;
-	public Path file;
-
-	public TaggedFile(Path file) {
-		userView = Files.getFileAttributeView(file, UserDefinedFileAttributeView.class);
-		this.file = file;
+	
+	public TaggedFile(String file){
+		super(file);
+		userView = Files.getFileAttributeView(this.toPath(), UserDefinedFileAttributeView.class);
 
 		if (!hasAttribute(tagAttrib)) {
 			try {
