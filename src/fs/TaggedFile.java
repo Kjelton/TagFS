@@ -18,14 +18,16 @@ public class TaggedFile extends File {
 	
 	public TaggedFile(String file){
 		super(file);
-		userView = Files.getFileAttributeView(this.toPath(), UserDefinedFileAttributeView.class);
-
-		if (!hasAttribute(tagAttrib)) {
-			try {
-				userView.write(tagAttrib, Charset.defaultCharset().encode(""));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if(this.isFile()){
+			userView = Files.getFileAttributeView(this.toPath(), UserDefinedFileAttributeView.class);
+	
+			if (!hasAttribute(tagAttrib)) {
+				try {
+					userView.write(tagAttrib, Charset.defaultCharset().encode(""));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -90,20 +92,22 @@ public class TaggedFile extends File {
 
 	public String getTags() {
 		ByteBuffer bb;
-		try {
-			bb = ByteBuffer.allocate(userView.size(tagAttrib));
-			userView.read(tagAttrib, bb);
-			bb.flip();
-			String value = Charset.defaultCharset().decode(bb).toString();
-			if(value.equals("")){
-				return "NONE";
+		if (this.isFile()){
+			try {
+				bb = ByteBuffer.allocate(userView.size(tagAttrib));
+				userView.read(tagAttrib, bb);
+				bb.flip();
+				String value = Charset.defaultCharset().decode(bb).toString();
+				if(value.equals("")){
+					return "NONE";
+				}
+				return value;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			return value;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return null;
+		return "Folder";
 	}
 
 	public void clearTags() {
