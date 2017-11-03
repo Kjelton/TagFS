@@ -11,8 +11,9 @@ public class FileBrowser {
 	
 	
 	
-	private Path defaultDirectory = Paths.get("E:/Pictures/Toga Himiko");
-	private Path currentDirectory = defaultDirectory;
+	private TaggedFile defaultDirectory = new TaggedFile("E:/Pictures/Toga Himiko");
+	private TaggedFile currentDirectory = defaultDirectory;
+	private TaggedFile [] currentDirectoryFiles = currentDirectory.listTaggedFiles();
 	private boolean running;
 	private ArrayList<String> whitelist, blacklist = new ArrayList<String>();
 
@@ -23,7 +24,7 @@ public class FileBrowser {
 	public void changeDirectory(Path newDirectory) {
 		if (Files.exists(newDirectory)) {
 			if (Files.isDirectory(newDirectory)) {
-				currentDirectory = newDirectory;
+				currentDirectory = new TaggedFile(newDirectory.toString());
 				System.out.println("Changed directory to: " + newDirectory.toString());
 			} else if (Files.isRegularFile(newDirectory)) {
 				System.out.println("Path specified is a file.");
@@ -36,18 +37,16 @@ public class FileBrowser {
 	}
 
 	public void loadDirectory() {
-		
-		File[] listOfFiles = currentDirectory.toFile().listFiles();
-		TaggedFile[] taggedFiles = new TaggedFile[listOfFiles.length];
-		for (int i = 0; i < listOfFiles.length; i++) {
-			taggedFiles[i] = new TaggedFile(listOfFiles[i].toPath());
-			System.out.println("File name: " + listOfFiles[i].getName() + "  Tags: " + taggedFiles[i].getTags());
+	
+		for (TaggedFile file : currentDirectoryFiles){
+			System.out.println("File name: " + file.getName() + "  Tags: " + file.getTags());
 		}
 
-		System.out.println(Integer.toString(listOfFiles.length) + " files found.");
+		System.out.println(Integer.toString(currentDirectoryFiles.length) + " files found.");
 	}
+	
 
-	public void getTags() {
+	/*public void getTags() {
 		File[] listOfFiles = currentDirectory.toFile().listFiles();
 		TaggedFile[] taggedFiles = new TaggedFile[listOfFiles.length];
 		for (int i = 0; i < listOfFiles.length; i++) {
@@ -60,7 +59,7 @@ public class FileBrowser {
 		for (int i = 0; i < listOfFiles.length; i++) {
 			taggedFiles[i] = new TaggedFile(listOfFiles[i].toPath());
 		}
-	}
+	}*/
 
 	public void printWelcome(){
 		System.out.println("Welcome to TagFS");
@@ -68,7 +67,15 @@ public class FileBrowser {
 	}
 	
 	public String addTag(String filename, String tag){
-		Path fullPath = Paths.get(currentDirectory.toString()+filename);
+		
+		for(TaggedFile file : currentDirectoryFiles){
+			if(file.getName().equals(filename)){
+				file.addTag(tag);
+				return "tag: " +tag+ " added successfully to file: " + filename;
+			}
+		}
+		
+		/*Path fullPath = Paths.get(currentDirectory.toString()+filename);
 		TaggedFile file;
 		if(Files.exists(Paths.get(filename))){
 			file = new TaggedFile(Paths.get(filename));
@@ -79,7 +86,7 @@ public class FileBrowser {
 			file = new TaggedFile(fullPath);
 			file.addTag(tag);
 			return "tag: " +tag+ " added successfully to file: " + filename;
-		}
+		}*/
 		return "File does not exist";
 	}
 	
@@ -89,7 +96,7 @@ public class FileBrowser {
 		Scanner reader = new Scanner(System.in);
 		String command = "";
 		while (this.isRunning()) {
-			getTags();
+			//getTags();
 			option = reader.nextLine();
 			command = option.substring(0, 2);
 			switch (command) {
@@ -102,7 +109,7 @@ public class FileBrowser {
 				}
 				break;
 			case "up":
-				changeDirectory(Paths.get(currentDirectory.toFile().getParent()));
+				changeDirectory(Paths.get(currentDirectory.getParent()));
 			case "ls":
 				loadDirectory();
 			case "at":
@@ -110,6 +117,7 @@ public class FileBrowser {
 			default:
 
 			}
+			reader.close();
 		}
 	}
 
@@ -148,7 +156,7 @@ public class FileBrowser {
 		if(!whitelist.isEmpty()){
 			for (String tag : getWhitelist()){
 				for (File file : filtered){
-					if (!new TaggedFile(file.toPath()).hasTag(tag)){
+					if (!new TaggedFile(file.toString()).hasTag(tag)){
 						filtered.remove(file);
 					}
 				}
@@ -158,7 +166,7 @@ public class FileBrowser {
 		if(!blacklist.isEmpty()){
 			for (String tag : getBlacklist()){
 				for (File file : filtered){
-					if (new TaggedFile(file.toPath()).hasTag(tag)){
+					if (new TaggedFile(file.toString()).hasTag(tag)){
 						filtered.remove(file);
 					}
 				}
@@ -167,7 +175,7 @@ public class FileBrowser {
 		
 		TaggedFile[] filteredTagged = new TaggedFile[filtered.size()];
 		for (int i = 0; i < filteredTagged.length; i++){
-			filteredTagged[i] = new TaggedFile(filtered.get(i).toPath());
+			filteredTagged[i] = new TaggedFile(filtered.get(i).toString());
 		}
 		return filteredTagged;
 	}
