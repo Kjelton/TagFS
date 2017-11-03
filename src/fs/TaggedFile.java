@@ -70,6 +70,22 @@ public class TaggedFile extends File {
 			}
 		}
 	}
+	public void removeTag(String tagValue) {
+		String value = "";
+		if (hasTag(tagValue)) {
+			for (String tag : readTagList()){
+				if(!tag.equals(tagValue)){
+					value += tag + ";";
+				}
+			}
+			try {
+				userView.write(tagAttrib, Charset.defaultCharset().encode(value));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public String[] readTagList() {
 		ByteBuffer bb;
@@ -80,7 +96,6 @@ public class TaggedFile extends File {
 			String value = Charset.defaultCharset().decode(bb).toString();
 
 			String[] tagList = value.split(";");
-
 			return tagList;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -99,7 +114,7 @@ public class TaggedFile extends File {
 				bb.flip();
 				String value = Charset.defaultCharset().decode(bb).toString();
 				if(value.equals("")){
-					return "NONE";
+					return "";
 				}
 				return value;
 			} catch (IOException e) {
@@ -111,7 +126,12 @@ public class TaggedFile extends File {
 	}
 
 	public void clearTags() {
-
+		try {
+			userView.write(tagAttrib, Charset.defaultCharset().encode(""));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public TaggedFile [] listTaggedFiles(){
