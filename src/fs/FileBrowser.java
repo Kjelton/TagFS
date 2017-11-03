@@ -4,13 +4,17 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class FileBrowser {
-
+	
+	
+	
 	private Path defaultDirectory = Paths.get("E:/Pictures/Toga Himiko");
 	private Path currentDirectory = defaultDirectory;
 	private boolean running;
+	private ArrayList<String> whitelist, blacklist = new ArrayList<String>();
 
 	public FileBrowser() {
 		running = true;
@@ -32,7 +36,7 @@ public class FileBrowser {
 	}
 
 	public void loadDirectory() {
-
+		
 		File[] listOfFiles = currentDirectory.toFile().listFiles();
 		TaggedFile[] taggedFiles = new TaggedFile[listOfFiles.length];
 		for (int i = 0; i < listOfFiles.length; i++) {
@@ -112,7 +116,62 @@ public class FileBrowser {
 	public boolean isRunning() {
 		return running;
 	}
-
+	
+	public void addIncludedTag(String tag){
+		whitelist.add(tag);
+	}
+	public void removeIncludedTag(String tag){
+		whitelist.remove(tag);
+	}
+	
+	public void addExcludedTag(String tag){
+		blacklist.add(tag);
+	}
+	
+	public void removeExcludedTag(String tag){
+		blacklist.remove(tag);
+	}
+	
+	public ArrayList<String> getWhitelist(){
+		return whitelist;
+	}
+	
+	public ArrayList<String> getBlacklist(){
+		return blacklist;
+	}
+	
+	public TaggedFile[] filterTags(File[] files){
+		ArrayList<File> filtered = new ArrayList<File>();
+		for(File file : files){
+			filtered.add(file);
+		}
+		if(!whitelist.isEmpty()){
+			for (String tag : getWhitelist()){
+				for (File file : filtered){
+					if (!new TaggedFile(file.toPath()).hasTag(tag)){
+						filtered.remove(file);
+					}
+				}
+			}
+		}
+		
+		if(!blacklist.isEmpty()){
+			for (String tag : getBlacklist()){
+				for (File file : filtered){
+					if (new TaggedFile(file.toPath()).hasTag(tag)){
+						filtered.remove(file);
+					}
+				}
+			}
+		}
+		
+		TaggedFile[] filteredTagged = new TaggedFile[filtered.size()];
+		for (int i = 0; i < filteredTagged.length; i++){
+			filteredTagged[i] = new TaggedFile(filtered.get(i).toPath());
+		}
+		return filteredTagged;
+	}
+	
 	public static void main(String[] args) {
 
 		FileBrowser fb = new FileBrowser();
