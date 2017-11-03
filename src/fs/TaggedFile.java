@@ -109,6 +109,15 @@ public class TaggedFile extends File {
 	public void clearTags() {
 
 	}
+	
+	public TaggedFile [] listTaggedFiles(){
+		File [] files = this.listFiles();
+		TaggedFile [] taggedFiles = new TaggedFile[files.length];
+		for (int i = 0; i < files.length; i++){
+			taggedFiles[i] = new TaggedFile(files[i].toString());
+		}
+		return taggedFiles;
+	}
 
 	/*public static void main(String args[]) {
 		Path file = Paths.get("E:/Pictures/Toga Himiko/this.jpg");
