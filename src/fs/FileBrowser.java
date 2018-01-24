@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class FileBrowser {
 
-	private TaggedFile defaultDirectory = new TaggedFile("E:/Pictures/Toga Himiko");
+	private TaggedFile defaultDirectory = new TaggedFile("C:/Users/Elton/Pictures/test");
 	private TaggedFile currentDirectory = defaultDirectory;
 	private TaggedFile[] currentDirectoryFiles = currentDirectory.listTaggedFiles();
 	private boolean running;
@@ -131,7 +131,7 @@ public class FileBrowser {
 				running = false;
 				break;
 			default:
-
+				System.out.println("Command not recognized");
 			}
 		}
 		reader.close();
